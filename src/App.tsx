@@ -1,7 +1,11 @@
-function App() {
+import { Dashboard } from "./components/dashboard";
+import { DesktopShell } from "./components/desktop-shell";
 
+function App() {
   return (
-    <h1>Hello world</h1>
+    <DesktopShell>
+      <Dashboard />
+    </DesktopShell>
   );
 }
 
