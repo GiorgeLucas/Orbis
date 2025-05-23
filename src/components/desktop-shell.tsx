@@ -15,6 +15,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -23,17 +24,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Dashboard } from "./dashboard";
+import { GoalOrganizer } from "./goal-organizer";
+import { TaskManager } from "./task-manager";
+import { HabitTracker } from "./habit-tracker";
 
-export function DesktopShell({ children }: { children: React.ReactNode }) {
+export function DesktopShell() {
   const [isMaximized, setIsMaximized] = useState(true);
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
+  };
+
+  type PageKey = "dashboard" | "habitTracker" | "goalOrganizer" | "taskManager";
+  const [activePage, setActivePage] = useState<PageKey>("dashboard");
+
+  const pages: Record<PageKey, React.ReactNode> = {
+      dashboard: <Dashboard />,
+      habitTracker: <HabitTracker />,
+      goalOrganizer: <GoalOrganizer />,
+      taskManager: <TaskManager />,
   };
 
   return (
@@ -54,7 +69,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Button variant={"ghost"} className="justify-start">
+                        <Button variant={"ghost"} className="justify-start" onClick={() => setActivePage("dashboard")}>
                           <Home className="h-5 w-5" />
                           <span>Dashboard</span>
                         </Button>
@@ -70,7 +85,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Button variant={"ghost"} className="justify-start">
+                        <Button variant={"ghost"} className="justify-start" onClick={() => setActivePage("habitTracker")}>
                           <CheckCircle2 className="h-5 w-5" />
                           <span>Habits</span>
                         </Button>
@@ -78,7 +93,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Button variant={"ghost"} className="justify-start">
+                        <Button variant={"ghost"} className="justify-start" onClick={() => setActivePage("taskManager")}>
                           <Calendar className="h-5 w-5" />
                           <span>Tasks</span>
                         </Button>
@@ -86,7 +101,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Button variant={"ghost"} className="justify-start">
+                        <Button variant={"ghost"} className="justify-start" onClick={() => setActivePage("goalOrganizer")}>
                           <BarChart3 className="h-5 w-5" />
                           <span>Goals</span>
                         </Button>
@@ -96,7 +111,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                 </SidebarGroupContent>
               </SidebarGroup>
             </SidebarContent>
-            <div className="absolute bottom-4 left-4">
+            <SidebarFooter>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
@@ -107,13 +122,21 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
-            </div>
-            <SidebarRail />
+            </SidebarFooter>
           </Sidebar>
 
           <div className="flex flex-1 flex-col h-screen">
             <div className="flex h-14 items-center justify-between border-b px-4">
-              <div className="text-sm font-medium">Dashboard</div>
+              <div className="flex items-center gap-2">
+                <SidebarTrigger />
+                <div className="text-sm font-medium">{
+                  activePage === "dashboard"
+                    ? "Dashboard"
+                    : activePage === "goalOrganizer"
+                    ? "Goal Organizer"
+                    : "Task Manager"
+                  }</div>
+              </div>
               <div className="flex items-center gap-2">
                 <ModeToggle />
                 <Button
@@ -133,7 +156,9 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </div>
             </div>
-            <div className="flex-1 overflow-auto p-6">{children}</div>
+            <div className="flex-1 overflow-auto p-6">
+              {pages[activePage]}
+            </div>
           </div>
         </SidebarProvider>
       </div>
